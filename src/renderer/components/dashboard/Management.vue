@@ -145,6 +145,17 @@
 					this.$notify.success(this.$t('management.notify.newDevices'))
 				}
 			})
+			ipcRenderer.on('activeDevices',(_, activeDevices)=>{
+				// console.log(activeDevices);
+				// setTimeout(()=>{process.kill((activeDevices.pid), 'SIGTERM')},5000)
+				activeDevices.forEach((item)=>{
+					// item.kill()
+					console.log(item);
+
+					// setTimeout(()=>{process.kill((item.pid), 'SIGTERM')},5000)
+
+				})
+			})
 			const opened = {}
 			ipcRenderer.on('open', (_, id) => {
 				if (!opened[id]) {

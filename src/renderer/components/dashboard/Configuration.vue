@@ -36,7 +36,11 @@
 					></el-input>
 				</el-tooltip>
 			</el-form-item>
-
+			<el-form-item :label="$t('configuration.colNum.label')">
+				<el-popover placement="top-start" :content="$t('configuration.colNum.popover')" width="250" trigger="focus">
+					<el-slider slot="reference" v-model.number="config.colNum" :max="10" :min="3" show-input></el-slider>
+				</el-popover>
+			</el-form-item>
 			<el-form-item :label="$t('configuration.bitRate.label')">
 				<el-popover placement="top-start" :content="$t('configuration.bitRate.popover')" width="250" trigger="focus">
 					<el-slider slot="reference" v-model.number="config.bitRate" :max="1024" :min="1" show-input></el-slider>
@@ -111,13 +115,17 @@ export default {
 					openMirror: true,
 					filepath: 'C:/users/user/Desktop/file.mkv'
 				},
-
+				screenWidth:window.screen.width,
+				screenHeight:window.screen.height,
 				screen: false,
 				fixed: false,
 				control: true,
 				touch: true,
 				render: false,
+				activeDeivies:[],
 				bitRate: 8,
+				colNum: 6,
+				rowNum: 2,
 				maxSize: 0,
 				crop: {
 					x: 0,
@@ -154,13 +162,17 @@ export default {
 					openMirror: true,
 					filepath: 'C:/users/user/Desktop/file.mkv'
 				},
-
+				screenWidth:window.screen.width,
+				screenHeight:window.screen.height,
 				screen: false,
 				fixed: false,
 				control: true,
 				touch: true,
 				render: false,
+				activeDeivies:[],
 				bitRate: 8,
+				colNum: 6,
+				rowNum: 2,
 				maxSize: 0,
 				crop: {
 					x: 0,

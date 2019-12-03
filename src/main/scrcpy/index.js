@@ -4,9 +4,15 @@ fixPath()
 const open = ({ sender }, options) => {
 	const args = []
 	const { config, devices } = options
-	const { title, record, screen, fixed, control, touch, render, bitRate, maxSize, crop } = config
+	const { title, record, screen, fixed, control, touch, render, activeDeivies, colNum, rowNum, screenWidth, screenHeight, bitRate, maxSize, crop } = config
 	const { open, openMirror, filepath } = record
 	const { x, y, height, width } = crop
+
+	const windowWidth = parseInt(screenWidth/colNum)
+	const windowHeight = parseInt((screenHeight-100)/rowNum)
+	const deviceNum = devices.length
+	var colUse = 0
+	var rowUse = 0
 
 	if (title !== '') {
 		args.push('--window-title')
@@ -47,9 +53,32 @@ const open = ({ sender }, options) => {
 		args.push('--crop')
 		args.push(`${height}:${width}:${x}:${y}`)
 	}
+	args.push('--window-width')
+	args.push(windowWidth)
+	args.push('--window-height')
+	args.push(windowHeight)
 
 	devices.forEach(({ id }) => {
 		const { spawn } = require('child_process')
+		if (colNum > colUse) {
+			args.push('--window-x')
+			args.push(windowWidth * colUse )
+			args.push('--window-y')
+			args.push(windowHeight * rowUse + 30)
+			colUse++
+		} else {
+			colUse = 0
+			rowUse++
+			if (rowUse >= rowNum) {
+				console.log(`The screen is full of windows `)
+				return
+			}
+			args.push('--window-x')
+			args.push(windowWidth * colUse )
+			args.push('--window-y')
+			args.push(windowHeight * rowUse + 60)
+		}
+
 		const scrcpy = spawn('scrcpy', [...args, '-s', `${id}`])
 		let opened = false
 		let exited = false
@@ -60,6 +89,7 @@ const open = ({ sender }, options) => {
 			}
 			console.log(`stdout: ${data}`)
 		})
+		activeDeivies.push(scrcpy)
 		scrcpy.on('error', (code) => {
 			console.log(`child process close all stdio with code ${code}`)
 			scrcpy.kill()
@@ -78,6 +108,7 @@ const open = ({ sender }, options) => {
 			}
 		})
 	})
+	// sender.send('activeDevices',activeDeivies)
 }
 
 export default {
