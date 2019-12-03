@@ -18,8 +18,7 @@
 					</el-button>
 				</template>
 			</el-autocomplete>
-			<br />
-			<br />
+
 			<el-button type="success" @click.native.prevent="connect" :disabled="ip === ''" plain v-waves>{{
 				$t('management.ip.connect')
 			}}</el-button>
@@ -82,11 +81,21 @@
 				</el-table-column>
 			</el-table>
 			<div class="wrap-button">
-				<el-button type="primary" @click.native.prevent="open" :disabled="selectedDevices.length === 0" plain v-waves>
-					{{ $t('management.button.open') }}
-				</el-button>
+				<el-col :span="6">
+					<el-button type="primary" @click.native.prevent="open" :disabled="selectedDevices.length === 0" plain v-waves>
+						{{ $t('management.button.open') }}
+					</el-button>
+				</el-col>
+				<el-col :span="15">
+					<el-input v-model="appLocation" placeholder="请输入apk路径" prefix-icon="el-icon-edit" clearable
+					></el-input>
+				</el-col>
+				<el-col :span="3">
+					<el-button type="success" @click.native.prevent="installApp" :disabled="(activeDevices.length === 0 || appLocation ==='' )" plain v-waves>安装</el-button>
+				</el-col>
 			</div>
 		</div>
+
 		<div class="when-empty" v-else>
 			<span> {{ $t('management.whenEmpty') }} </span>
 		</div>
@@ -104,6 +113,8 @@
 				editModeEnabled: true,
 				currentDevices: [],
 				selectedDevices: [],
+				activeDevices:{},
+				appLocation:'',
 				ip: '192.168.0.',
 				wirelessDevices: [],
 				deletedEvent: false,
@@ -145,19 +156,23 @@
 					this.$notify.success(this.$t('management.notify.newDevices'))
 				}
 			})
-			ipcRenderer.on('activeDevices',(_, activeDevices)=>{
+			ipcRenderer.on('activeDevice',(_, deviceId)=>{
+				// this.activeDevices.push
 				// console.log(activeDevices);
 				// setTimeout(()=>{process.kill((activeDevices.pid), 'SIGTERM')},5000)
-				activeDevices.forEach((item)=>{
-					// item.kill()
-					console.log(item);
-
-					// setTimeout(()=>{process.kill((item.pid), 'SIGTERM')},5000)
-
-				})
+				// activeDevices.forEach((item)=>{
+				// 	// item.kill()
+				// 	console.log(item);
+				//
+				// 	// setTimeout(()=>{process.kill((item.pid), 'SIGTERM')},5000)
+				//
+				// })
+				this.activeDevices[deviceId]=deviceId
+				// console.log(this.activeDevices);
 			})
 			const opened = {}
 			ipcRenderer.on('open', (_, id) => {
+				this.activeDevices[id]=id
 				if (!opened[id]) {
 					opened[id] = true
 					setTimeout(() => {
@@ -171,6 +186,7 @@
 
 			const closed = {}
 			ipcRenderer.on('close', (_, { success, id }) => {
+				delete this.activeDevices[id]
 				if (!closed[id]) {
 					closed[id] = true
 					const result = success ? 'success' : 'error'
@@ -186,6 +202,9 @@
 			EditableCell
 		},
 		methods: {
+			installApp(){
+				ipcRenderer.send('installApp',{appLocation:this.appLocation, devices:this.activeDevices})
+			},
 			open() {
 				this.$notify.info(this.$t('management.open.loading'), 2000)
 				const config = this.$store.get('config')
@@ -272,6 +291,10 @@
 	.wrap-form {
 		text-align: center;
 		margin-bottom: 20px;
+	}
+
+	.el-button{
+		padding: 12px 10px;
 	}
 	.display {
 		display: none;

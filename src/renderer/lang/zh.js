@@ -79,7 +79,7 @@ export default {
 			disconnect: '断开连接'
 		},
 		button: {
-			open: '打开选中的镜像'
+			open: '打开选中镜像'
 		},
 		whenEmpty: '暂无设备连接',
 		notify: {

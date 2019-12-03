@@ -89,7 +89,8 @@ const open = ({ sender }, options) => {
 			}
 			console.log(`stdout: ${data}`)
 		})
-		activeDeivies.push(scrcpy)
+		// activeDeivies.push(id)
+		// sender.send('activeDevice',id)
 		scrcpy.on('error', (code) => {
 			console.log(`child process close all stdio with code ${code}`)
 			scrcpy.kill()
@@ -110,6 +111,7 @@ const open = ({ sender }, options) => {
 	})
 	// sender.send('activeDevices',activeDeivies)
 }
+
 
 export default {
 	open

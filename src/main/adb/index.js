@@ -77,6 +77,18 @@ const disconnect = ({ sender }, ip) => {
 	})
 }
 
+const installApp=({ sender }, options) => {
+	const args = []
+	// console.log(options);
+	const { appLocation, devices } = options
+	for (let item in devices) {
+		// console.log(item);
+		client.install(item, appLocation)
+	}
+
+}
+
+
 export default {
-	connect, disconnect, onDevices
+	connect, disconnect, onDevices,installApp
 }

@@ -57,6 +57,7 @@ function createWindow() {
 		ipcMain.on('open', scrcpy.open)
 		ipcMain.on('connect', adb.connect)
 		ipcMain.on('disconnect', adb.disconnect)
+		ipcMain.on('installApp', adb.installApp)
 
 	})
 }
