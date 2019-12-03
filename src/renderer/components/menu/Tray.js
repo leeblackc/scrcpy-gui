@@ -11,11 +11,11 @@ export default Menu => {
 	})
 
 	tray.setContextMenu(menu)
-	tray.setTitle('Scrcpy2')
-	tray.setToolTip('Scrcpy2')
-	tray.on('right-click', () => {
-		tray.popUpContextMenu(menu)
-	})
+	tray.setTitle('ScrcpyGui')
+	tray.setToolTip('ScrcpyGui')
+	// tray.on('right-click', () => {
+	// 	tray.popUpContextMenu(menu)
+	// })
 	tray.on('click', () => {
 		window.show()
 	})
