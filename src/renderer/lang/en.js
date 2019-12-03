@@ -21,7 +21,7 @@ export default {
 		},
 		bitRate: {
 			label: 'bit rate',
-			popover: '8 is the default bit rate'
+			popover: '2 is the default bit rate'
 		},
 		colNum: {
 		 label: 'phone col display num',

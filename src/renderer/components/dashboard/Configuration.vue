@@ -1,14 +1,7 @@
 <template>
 	<el-card>
 		<el-form ref="form" :model="config" label-width="110px">
-			<el-form-item :label="$t('configuration.title.label')">
-				<el-input
-					v-model="config.title"
-					:placeholder="$t('configuration.title.placeholder')"
-					prefix-icon="el-icon-phone"
-					clearable
-				></el-input>
-			</el-form-item>
+
 
 			<el-form-item :label="$t('configuration.record.label')">
 				<el-switch
@@ -43,7 +36,7 @@
 			</el-form-item>
 			<el-form-item :label="$t('configuration.bitRate.label')">
 				<el-popover placement="top-start" :content="$t('configuration.bitRate.popover')" width="250" trigger="focus">
-					<el-slider slot="reference" v-model.number="config.bitRate" :max="1024" :min="1" show-input></el-slider>
+					<el-slider slot="reference" v-model.number="config.bitRate" :max="8" :min="2" show-input></el-slider>
 				</el-popover>
 			</el-form-item>
 
@@ -53,39 +46,39 @@
 				</el-popover>
 			</el-form-item>
 
-			<el-form-item :label="$t('configuration.crop.label')">
-				<el-popover placement="top-start" :content="$t('configuration.crop.x')" width="200" trigger="hover">
-					<el-input-number slot="reference" size="mini" v-model="config.crop.x"></el-input-number>
-				</el-popover>
-				<el-popover placement="top-start" :content="$t('configuration.crop.y')" width="200" trigger="hover">
-					<el-input-number slot="reference" size="mini" v-model="config.crop.y"></el-input-number>
-				</el-popover>
-				<el-popover
-					placement="top-start"
-					:title="$t('configuration.crop.height.title')"
-					:content="$t('configuration.crop.height.content')"
-					width="200"
-					trigger="hover"
-				>
-					<el-input-number slot="reference" size="mini" v-model="config.crop.height"></el-input-number>
-				</el-popover>
-				<el-popover
-					placement="top-start"
-					:title="$t('configuration.crop.width.title')"
-					:content="$t('configuration.crop.width.content')"
-					width="200"
-					trigger="hover"
-				>
-					<el-input-number slot="reference" size="mini" v-model="config.crop.width"></el-input-number>
-				</el-popover>
-			</el-form-item>
+<!--			<el-form-item :label="$t('configuration.crop.label')">-->
+<!--				<el-popover placement="top-start" :content="$t('configuration.crop.x')" width="200" trigger="hover">-->
+<!--					<el-input-number slot="reference" size="mini" v-model="config.crop.x"></el-input-number>-->
+<!--				</el-popover>-->
+<!--				<el-popover placement="top-start" :content="$t('configuration.crop.y')" width="200" trigger="hover">-->
+<!--					<el-input-number slot="reference" size="mini" v-model="config.crop.y"></el-input-number>-->
+<!--				</el-popover>-->
+<!--				<el-popover-->
+<!--					placement="top-start"-->
+<!--					:title="$t('configuration.crop.height.title')"-->
+<!--					:content="$t('configuration.crop.height.content')"-->
+<!--					width="200"-->
+<!--					trigger="hover"-->
+<!--				>-->
+<!--					<el-input-number slot="reference" size="mini" v-model="config.crop.height"></el-input-number>-->
+<!--				</el-popover>-->
+<!--				<el-popover-->
+<!--					placement="top-start"-->
+<!--					:title="$t('configuration.crop.width.title')"-->
+<!--					:content="$t('configuration.crop.width.content')"-->
+<!--					width="200"-->
+<!--					trigger="hover"-->
+<!--				>-->
+<!--					<el-input-number slot="reference" size="mini" v-model="config.crop.width"></el-input-number>-->
+<!--				</el-popover>-->
+<!--			</el-form-item>-->
 
 			<el-form-item :label="$t('configuration.other.label')">
-				<el-checkbox v-model="config.fixed" border size="medium">{{ $t('configuration.other.fixed') }}</el-checkbox>
-				<el-checkbox v-model="config.control" border size="medium">{{ $t('configuration.other.control') }}</el-checkbox>
-				<el-checkbox v-model="config.touch" border size="medium">{{ $t('configuration.other.touch') }}</el-checkbox>
-				<el-checkbox v-model="config.render" border size="medium">{{ $t('configuration.other.render') }}</el-checkbox>
-				<el-checkbox v-model="config.screen" border size="medium">{{ $t('configuration.other.screen') }}</el-checkbox>
+				<el-checkbox v-model="config.fixed"  size="medium">{{ $t('configuration.other.fixed') }}</el-checkbox>
+				<el-checkbox v-model="config.control"  size="medium">{{ $t('configuration.other.control') }}</el-checkbox>
+				<el-checkbox v-model="config.touch"  size="medium">{{ $t('configuration.other.touch') }}</el-checkbox>
+				<el-checkbox v-model="config.render"  size="medium">{{ $t('configuration.other.render') }}</el-checkbox>
+				<el-checkbox v-model="config.screen"  size="medium">{{ $t('configuration.other.screen') }}</el-checkbox>
 			</el-form-item>
 			<el-divider content-position="right">
 				<el-button type="text" @click="changeLocale">中/English</el-button>
@@ -108,7 +101,7 @@ export default {
 	data() {
 		return {
 			config: {
-				title: '',
+
 
 				record: {
 					open: false,
@@ -155,7 +148,6 @@ export default {
 		},
 		setDefault() {
 			this.config = {
-				title: '',
 
 				record: {
 					open: false,

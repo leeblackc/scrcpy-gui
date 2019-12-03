@@ -2,12 +2,7 @@
 	<el-card>
 		<div class="wrap-form">
 			<el-divider content-position="center">{{ $t('management.ip.tip') }}</el-divider>
-			<el-autocomplete
-				v-model="ip"
-				:fetch-suggestions="getWirelessDevices"
-				prefix-icon="el-icon-position"
-				@select="handleSelect"
-			>
+			<el-autocomplete v-model="ip" :fetch-suggestions="getWirelessDevices" prefix-icon="el-icon-position" @select="handleSelect" >
 				<template slot-scope="{ item }">
 					<div class="item-name">
 						<span style="color:#999">{{ $t('management.devices.name') }}: </span>{{ item.name }}
@@ -19,81 +14,70 @@
 				</template>
 			</el-autocomplete>
 
-			<el-button type="success" @click.native.prevent="connect" :disabled="ip === ''" plain v-waves>{{
-				$t('management.ip.connect')
-			}}</el-button>
+			<el-button type="success" @click.native.prevent="connect" :disabled="ip === ''" plain v-waves>
+				{{$t('management.ip.connect') }}
+			</el-button>
 		</div>
 
 		<el-divider><i class="el-icon-mobile-phone"></i></el-divider>
 		<div v-if="currentDevices.length > 0">
-			<el-table
-				:data="currentDevices"
-				@selection-change="selectionChange"
-				tooltip-effect="dark"
-				style="width:100%"
-				stripe
-				border
-			>
+			<el-table :data="currentDevices" @selection-change="selectionChange" tooltip-effect="dark" style="width:100%" stripe border >
 				<el-table-column type="selection" width="40"></el-table-column>
-				<el-table-column label="ID" prop="id"
-					><template slot-scope="scope">
-						<el-tag size="medium" type="warning">{{ scope.row.id }}</el-tag></template
-					></el-table-column
-				>
+				<el-table-column label="ID" prop="id" >
+					<template slot-scope="scope">
+						<el-tag size="medium" type="warning">{{ scope.row.id }}</el-tag>
+					</template>
+				</el-table-column>
+
 				<el-table-column :label="$t('management.devices.name')">
-					<editable-cell
-						prop="name"
-						slot-scope="{ row }"
-						:can-edit="editModeEnabled"
-						v-model="row.name"
-						:toolTipContent="$t('management.devices.edit')"
-						@input="(newName) => rename(row, newName)"
-					>
+					<editable-cell prop="name" slot-scope="{ row }" :can-edit="editModeEnabled" v-model="row.name"
+						:toolTipContent="$t('management.devices.edit')" @input="(newName) => rename(row, newName)" >
 						<span slot="content">{{ row.name }}</span>
 					</editable-cell>
 				</el-table-column>
-				<el-table-column
-					prop="method"
-					:label="$t('management.devices.method.label')"
-					width="90"
+
+				<el-table-column prop="method" :label="$t('management.devices.method.label')" width="90"
 					:filters="[{ text: $t('management.devices.method.wired'), value:  $t('management.devices.method.wired') }, { text:  $t('management.devices.method.wireless'), value:  $t('management.devices.method.wireless') }]"
-					:filter-method="filterTag"
-					filter-placement="bottom-end"
-				>
+					:filter-method="filterTag" filter-placement="bottom-end" >
 					<template slot-scope="scope">
-						<el-tag :type="scope.row.method ===  $t('management.devices.method.wired') ? 'primary' : 'success'">{{
-							scope.row.method
-						}}</el-tag>
+						<el-tag :type="scope.row.method ===  $t('management.devices.method.wired') ? 'primary' : 'success'">{{ scope.row.method }} </el-tag>
 					</template>
 				</el-table-column>
 
 				<el-table-column fixed="right" :label=" $t('management.devices.operation')" width="85">
 					<template slot-scope="scope">
-						<el-button
-							@click.native.prevent="disconnect(scope.$index, scope.row.id)"
-							type="text"
-							size="small"
-							:disabled="scope.row.method ===  $t('management.devices.method.wired')"
-						>
+						<el-button @click.native.prevent="disconnect(scope.$index, scope.row.id)" type="text" size="small"
+							:disabled="scope.row.method ===  $t('management.devices.method.wired')" >
 							{{ $t('management.devices.disconnect') }}
 						</el-button>
 					</template>
 				</el-table-column>
 			</el-table>
+
 			<div class="wrap-button">
-				<el-col :span="6">
-					<el-button type="primary" @click.native.prevent="open" :disabled="selectedDevices.length === 0" plain v-waves>
+				<el-col :span="24">
+					<el-button type="primary" style="width: 100%;" @click.native.prevent="open" :disabled="selectedDevices.length === 0" plain v-waves>
 						{{ $t('management.button.open') }}
 					</el-button>
 				</el-col>
-				<el-col :span="15">
+
+			</div>
+			<br>
+			<br>
+			<div class="wrap-button">
+				<el-col :span="20">
 					<el-input v-model="appLocation" placeholder="请输入apk路径" prefix-icon="el-icon-edit" clearable
 					></el-input>
 				</el-col>
+				<el-col :span="1">
+					&nbsp;
+				</el-col>
 				<el-col :span="3">
-					<el-button type="success" @click.native.prevent="installApp" :disabled="(activeDevices.length === 0 || appLocation ==='' )" plain v-waves>安装</el-button>
+					<el-button type="success" style="width: 100%;" @click.native.prevent="installApp" :disabled="(activeDevices.length === 0 || appLocation ==='' )" plain v-waves>安装</el-button>
 				</el-col>
 			</div>
+			<br>
+			<br>
 		</div>
 
 		<div class="when-empty" v-else>
@@ -105,7 +89,8 @@
 <script>
 	import EditableCell from '../components/EditableCell'
 	import Regular from '@/utils/regular'
-	import { ipcRenderer } from 'electron'
+	import {ipcRenderer} from 'electron'
+
 	export default {
 		name: 'Devices',
 		data() {
@@ -113,8 +98,8 @@
 				editModeEnabled: true,
 				currentDevices: [],
 				selectedDevices: [],
-				activeDevices:{},
-				appLocation:'',
+				activeDevices: {},
+				appLocation: '',
 				ip: '192.168.0.',
 				wirelessDevices: [],
 				deletedEvent: false,
@@ -127,26 +112,26 @@
 		created() {
 			this.wireless = this.$t('management.devices.method.wireless')
 			this.wired = this.$t('management.devices.method.wired')
-			const { wireless, wired } = this
+			const {wireless, wired} = this
 
 			this.wirelessDevices = this.$store.get('wirelessDevices') || []
 			ipcRenderer.on('devices', (event, devices) => {
 				const preDevicesCount = this.currentDevices.length
 				this.currentDevices = devices
-					.filter(({ id }, idx) => devices.findIndex((device) => id === device.id) === idx)
-					.map(({ id }) => ({ id, name: this.$store.get(id) || id, method: Regular('ip', id) ? wireless : wired }))
+					.filter(({id}, idx) => devices.findIndex((device) => id === device.id) === idx)
+					.map(({id}) => ({id, name: this.$store.get(id) || id, method: Regular('ip', id) ? wireless : wired}))
 
 				const preWirelessDevicesCount = this.wirelessDevices.length
-				this.currentDevices.forEach(({ id, name, method }) => {
+				this.currentDevices.forEach(({id, name, method}) => {
 					if (method === wired) {
 						return
 					}
 					if (this.wirelessDevices.every((device) => id !== device.id)) {
-						this.wirelessDevices.push({ id, name })
+						this.wirelessDevices.push({id, name})
 					}
 				})
 				preWirelessDevicesCount !== this.wirelessDevices.length &&
-					this.$store.put('wirelessDevices', this.wirelessDevices)
+				this.$store.put('wirelessDevices', this.wirelessDevices)
 				if (this.firstLoad) {
 					this.firstLoad = false
 					this.$notify.success(this.$t('management.notify.firstLoad'), 800)
@@ -156,7 +141,7 @@
 					this.$notify.success(this.$t('management.notify.newDevices'))
 				}
 			})
-			ipcRenderer.on('activeDevice',(_, deviceId)=>{
+			ipcRenderer.on('activeDevice', (_, deviceId) => {
 				// this.activeDevices.push
 				// console.log(activeDevices);
 				// setTimeout(()=>{process.kill((activeDevices.pid), 'SIGTERM')},5000)
@@ -167,16 +152,16 @@
 				// 	// setTimeout(()=>{process.kill((item.pid), 'SIGTERM')},5000)
 				//
 				// })
-				this.activeDevices[deviceId]=deviceId
+				this.activeDevices[deviceId] = deviceId
 				// console.log(this.activeDevices);
 			})
 			const opened = {}
 			ipcRenderer.on('open', (_, id) => {
-				this.activeDevices[id]=id
+				this.activeDevices[id] = id
 				if (!opened[id]) {
 					opened[id] = true
 					setTimeout(() => {
-						this.$notify.success(this.$t('management.notify.open', { name: this.$store.get(id) || id }))
+						this.$notify.success(this.$t('management.notify.open', {name: this.$store.get(id) || id}))
 					}, 500)
 					setTimeout(() => {
 						opened[id] = false
@@ -185,12 +170,12 @@
 			})
 
 			const closed = {}
-			ipcRenderer.on('close', (_, { success, id }) => {
+			ipcRenderer.on('close', (_, {success, id}) => {
 				delete this.activeDevices[id]
 				if (!closed[id]) {
 					closed[id] = true
 					const result = success ? 'success' : 'error'
-					this.$notify[result](this.$t('management.open.' + result, { name: this.$store.get(id) || id }))
+					this.$notify[result](this.$t('management.open.' + result, {name: this.$store.get(id) || id}))
 
 					setTimeout(() => {
 						closed[id] = false
@@ -202,34 +187,34 @@
 			EditableCell
 		},
 		methods: {
-			installApp(){
-				ipcRenderer.send('installApp',{appLocation:this.appLocation, devices:this.activeDevices})
+			installApp() {
+				ipcRenderer.send('installApp', {appLocation: this.appLocation, devices: this.activeDevices})
 			},
 			open() {
 				this.$notify.info(this.$t('management.open.loading'), 2000)
 				const config = this.$store.get('config')
-				ipcRenderer.send('open', { config, devices: this.selectedDevices })
+				ipcRenderer.send('open', {config, devices: this.selectedDevices})
 			},
 			connect() {
 				if (!Regular('ip', this.ip)) {
 					this.$notify.error(this.$t('management.connect.error.ip'))
 					return
 				}
-				const device = this.currentDevices.find(({ id }) => id === this.ip || id.split(':')[0] === this.ip)
+				const device = this.currentDevices.find(({id}) => id === this.ip || id.split(':')[0] === this.ip)
 				if (device) {
-					this.$notify.warning(this.$t('management.connect.error.exist', { name: device.name }))
+					this.$notify.warning(this.$t('management.connect.error.exist', {name: device.name}))
 					return
 				}
 
-				const wireDevice = this.currentDevices.filter(({ method }) => method === this.wired)[0]
+				const wireDevice = this.currentDevices.filter(({method}) => method === this.wired)[0]
 
 				const openedIP = this.ip
-				ipcRenderer.send('connect', { id: wireDevice ? wireDevice.id : null, ip: this.ip })
+				ipcRenderer.send('connect', {id: wireDevice ? wireDevice.id : null, ip: this.ip})
 
 				this.stoppedNotify = true
 				this.$notify.info(this.$t('management.connect.loading'))
 				setTimeout(() => {
-					if (this.currentDevices.every(({ id }) => id !== openedIP && id.split(':')[0] !== openedIP)) {
+					if (this.currentDevices.every(({id}) => id !== openedIP && id.split(':')[0] !== openedIP)) {
 						this.$notify.error(this.$t('management.connect.fail'))
 					} else {
 						this.$notify.success(this.$t('management.connect.success'))
@@ -250,7 +235,7 @@
 			filterTag(value, row) {
 				return row.method === value
 			},
-			rename({ id, method }, newName) {
+			rename({id, method}, newName) {
 				this.$store.put(id, newName)
 				if (method === this.wireless) {
 					const device = this.wirelessDevices.find((device) => device.id === id)
@@ -261,7 +246,7 @@
 			disconnect(index, id) {
 				this.currentDevices.splice(index, 1)
 				ipcRenderer.send('disconnect', id)
-				this.$notify.info(this.$t('management.disconnect.success', { name: this.$store.get(id) || id }))
+				this.$notify.info(this.$t('management.disconnect.success', {name: this.$store.get(id) || id}))
 			},
 			selectionChange(val) {
 				this.selectedDevices = val
@@ -284,32 +269,39 @@
 	.el-card__body {
 		padding: 12px !important;
 	}
+
 	.wrap-button {
 		text-align: center;
 		margin: 20px auto;
 	}
+
 	.wrap-form {
 		text-align: center;
 		margin-bottom: 20px;
 	}
 
-	.el-button{
+	.el-button {
 		padding: 12px 10px;
 	}
+
 	.display {
 		display: none;
 	}
+
 	.item-id {
 		font-size: 14px;
 		color: #666;
 	}
+
 	.item-id::before {
 		content: 'ID: ';
 		color: #999;
 	}
+
 	.item-remove {
 		padding: 0 10px;
 	}
+
 	.when-empty {
 		margin: 10px auto;
 		text-align: center;

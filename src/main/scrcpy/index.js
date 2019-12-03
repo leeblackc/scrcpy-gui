@@ -4,20 +4,14 @@ fixPath()
 const open = ({ sender }, options) => {
 	const args = []
 	const { config, devices } = options
-	const { title, record, screen, fixed, control, touch, render, activeDeivies, colNum, rowNum, screenWidth, screenHeight, bitRate, maxSize, crop } = config
+	const {record, screen, fixed, control, touch, render, activeDeivies, colNum, rowNum, screenWidth, screenHeight, bitRate, maxSize, crop } = config
 	const { open, openMirror, filepath } = record
 	const { x, y, height, width } = crop
 
 	const windowWidth = parseInt(screenWidth/colNum)
 	const windowHeight = parseInt((screenHeight-100)/rowNum)
-	const deviceNum = devices.length
 	var colUse = 0
 	var rowUse = 0
-
-	if (title !== '') {
-		args.push('--window-title')
-		args.push(title)
-	}
 
 	if (open) {
 		if (!openMirror) {
@@ -58,7 +52,9 @@ const open = ({ sender }, options) => {
 	args.push('--window-height')
 	args.push(windowHeight)
 
-	devices.forEach(({ id }) => {
+	devices.forEach(({ id, name }) => {
+		args.push('--window-title')
+		args.push(name)
 		const { spawn } = require('child_process')
 		if (colNum > colUse) {
 			args.push('--window-x')

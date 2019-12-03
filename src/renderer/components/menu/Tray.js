@@ -11,8 +11,8 @@ export default Menu => {
 	})
 
 	tray.setContextMenu(menu)
-	tray.setTitle('Scrcpy')
-	tray.setToolTip('Scrcpy')
+	tray.setTitle('Scrcpy2')
+	tray.setToolTip('Scrcpy2')
 	tray.on('right-click', () => {
 		tray.popUpContextMenu(menu)
 	})

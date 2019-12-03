@@ -21,7 +21,7 @@ export default {
 		},
 		bitRate: {
 			label: '镜像传输比特率',
-			popover: '8为默认比特率,不建议修改'
+			popover: '2为默认比特率,不建议修改'
 		},
 
 		colNum: {

@@ -21,7 +21,7 @@ function createWindow() {
    */
 	mainWindow = new BrowserWindow({
 		height: 800,
-		width: 513,
+		width: 600,
 		frame: false,
 		title: 'Scrcpy',
 		fullscreenable: false,
