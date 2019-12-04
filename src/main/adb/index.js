@@ -6,10 +6,12 @@ const onDevices = sender => {
 	client.trackDevices()
 		.then(function (tracker) {
 			tracker.on('add', function (device) {
+				console.log(device);
 				debug('Device %s was plugged in', device.id)
 				client.listDevices().then(function (devices) {
 					debug(devices)
 					sender.send('devices', devices)
+					console.log(devices);
 				})
 			})
 			tracker.on('remove', function (device) {
@@ -79,11 +81,48 @@ const disconnect = ({ sender }, ip) => {
 
 const installApp=({ sender }, options) => {
 	const args = []
-	// console.log(options);
+	console.log(options);
 	const { appLocation, devices } = options
 	for (let item in devices) {
-		// console.log(item);
-		client.install(item, appLocation)
+		// 安装apk
+		// client.install(item, appLocation)
+		// 推送文件 并进行安装
+
+		// client.push(item, appLocation,'/sdcard/app-release.apk').then(function(transfer){
+		// 	transfer.on('end', function() {
+		//
+		// 		client.installRemote(item,'/sdcard/app-release.apk')
+		// 	})
+		// })
+
+		// vivo无法进行pm install安装
+		let model = ''
+		client.shell(item, 'getprop ro.product.model')
+			.then(adb.util.readAll)
+			.then(function(output) {
+				model = output
+			})
+		if (model.indexOf('vivo')!= -1){
+			client.install(item, appLocation)
+		} else{
+			client.push(item, appLocation,'/sdcard/app-release.apk').then(function(transfer){
+				transfer.on('end', function() {
+
+					client.installRemote(item,'/sdcard/app-release.apk')
+				})
+			})
+		}
+
+		// shell 方式安装
+		// client.push(item, appLocation,'/sdcard/app-release.apk').then(function(transfer){
+		// 	transfer.on('end', function() {
+		// 		client.shell(item,"pm install -r /sdcard/app-release.apk")
+		// 			.then(adb.util.readAll)
+		// 			.then(function(output) {
+		// 			console.log('[%s] %s', item, output.toString().trim())
+		// 		})
+		// 	})
+		// })
 	}
 
 }

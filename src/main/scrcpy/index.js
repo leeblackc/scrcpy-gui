@@ -89,11 +89,14 @@ const open = ({ sender }, options) => {
 		// sender.send('activeDevice',id)
 		scrcpy.on('error', (code) => {
 			console.log(`child process close all stdio with code ${code}`)
+			sender.send('close', { success: code === 0, id })
 			scrcpy.kill()
+			// opened = false
 		})
 
 		scrcpy.on('close', (code) => {
 			console.log(`child process close all stdio with code ${code}`)
+			scrcpy.kill()
 		})
 
 		scrcpy.on('exit', (code) => {
@@ -102,6 +105,7 @@ const open = ({ sender }, options) => {
 				sender.send('close', { success: code === 0, id })
 				scrcpy.kill()
 				exited = true
+				// opened = false
 			}
 		})
 	})
