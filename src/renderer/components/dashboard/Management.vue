@@ -95,7 +95,8 @@
 	import EditableCell from '../components/EditableCell'
 	import Regular from '@/utils/regular'
 	import {ipcRenderer} from 'electron'
-
+	// const childProcess = require('child_process');
+	// const exec = childProcess.exec
 	export default {
 		name: 'Devices',
 		data() {
@@ -104,7 +105,7 @@
 				currentDevices: [],
 				selectedDevices: [],
 				activeDevices: {},
-				activeDeviceIds: [],
+				activeDeviceIds: {},
 				appLocation: '',
 				ip: '192.168.0.',
 				wirelessDevices: [],
@@ -177,15 +178,25 @@
 				}
 			})
 
-			ipcRenderer.on('activeDeviceId', (_, item) => {
-				console.log(item);
-				this.activeDeviceIds.push(item.pid)
+			ipcRenderer.on('activeDeviceId', (_, {deviceId, processId}) => {
+				console.log(deviceId, processId)
+				this.$set(this.activeDeviceIds, processId, deviceId)
 			})
 
-			ipcRenderer.on('offlineDeviceId', (_, item) => {
-				console.log(item);
-				this.activeDeviceIds.push(item.pid)
+			ipcRenderer.on('offlineDeviceId', (_, {deviceId, processId}) => {
+
+				this.$delete(this.activeDeviceIds, processId)
+
 			})
+			ipcRenderer.on('offlineDevice', (_, deviceId) => {
+				for (let key in this.activeDeviceIds) {
+					if (this.activeDeviceIds[key] == deviceId) {
+						this.$delete(this.activeDeviceIds, key)
+					}
+				}
+
+			})
+
 		},
 		components: {
 			EditableCell
@@ -201,17 +212,41 @@
 			installApp() {
 				ipcRenderer.send('installApp', {appLocation: this.appLocation, devices: this.activeDevices})
 			},
-			open() {
-				this.activeDeviceIds.forEach(function (deviceId) {
-					console.log(deviceId);
-					process.kill(deviceId, 'SIGTERM')
+			viewProcessMessage(name, cb) {
+				let cmd = process.platform === 'win32' ? 'tasklist' : 'ps aux'
+				exec(cmd, function (err, stdout, stderr) {
+					if (err) {
+						return console.error(err)
+					}
+					stdout.split('\n').filter((line) => {
+						let processMessage = line.trim().split(/\s+/)
+						let processName = processMessage[0] //processMessage[0]进程名称 ， processMessage[1]进程id
+						if (processName === name) {
+							return cb(processMessage[1])
+						}
+					})
 				})
-				this.activeDeviceIds = []
-				console.log(this.activeDeviceIds);
+			},
+
+
+			open() {
+				// this.viewProcessMessage('scrcpy.exe',function (msg) {
+				// 	//关闭匹配的进程
+				// 	process.kill(msg)
+				// })
+				for (let processId in this.activeDeviceIds) {
+					console.log(this.activeDeviceIds[processId]);
+					process.kill(processId, 'SIGTERM')
+
+				}
+				this.activeDeviceIds = {}
 
 				this.$notify.info(this.$t('management.open.loading'), 2000)
 				const config = this.$store.get('config')
-				ipcRenderer.send('open', {config, devices: this.selectedDevices})
+
+				setTimeout(() => {
+					ipcRenderer.send('open', {config, devices: this.selectedDevices})
+				}, 1000)
 			},
 			connect() {
 				if (!Regular('ip', this.ip)) {

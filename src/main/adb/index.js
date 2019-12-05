@@ -11,10 +11,10 @@ const onDevices = sender => {
 				client.listDevices().then(function (devices) {
 					// debug(devices)
 					sender.send('devices', devices)
-					console.log(devices);
 				})
 			})
 			tracker.on('remove', function (device) {
+				sender.send('offlineDevice',  device.id )
 				debug('Device %s was unplugged', device.id)
 				client.listDevices().then(function (devices) {
 					debug(devices)
@@ -81,7 +81,7 @@ const disconnect = ({ sender }, ip) => {
 
 const installApp=({ sender }, options) => {
 	const args = []
-	console.log(options);
+	// console.log(options);
 	const { appLocation, devices } = options
 	for (let item in devices) {
 		// 安装apk
