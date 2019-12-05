@@ -101,8 +101,6 @@ export default {
 	data() {
 		return {
 			config: {
-
-
 				record: {
 					open: false,
 					openMirror: true,
@@ -176,6 +174,7 @@ export default {
 			this.$store.put('config', this.config)
 		},
 		changeLocale() {
+
 			localStorage.setItem('lang', this.$i18n.locale === 'zh' ? 'en' : 'zh')
 			window.tray.destroy()
 			window.location.reload()

@@ -2,7 +2,7 @@
 	<el-card>
 		<div class="wrap-form">
 			<el-divider content-position="center">{{ $t('management.ip.tip') }}</el-divider>
-			<el-autocomplete v-model="ip" :fetch-suggestions="getWirelessDevices" prefix-icon="el-icon-position" @select="handleSelect" >
+			<el-autocomplete v-model="ip" :fetch-suggestions="getWirelessDevices" prefix-icon="el-icon-position" @select="handleSelect">
 				<template slot-scope="{ item }">
 					<div class="item-name">
 						<span style="color:#999">{{ $t('management.devices.name') }}: </span>{{ item.name }}
@@ -21,9 +21,9 @@
 
 		<el-divider><i class="el-icon-mobile-phone"></i></el-divider>
 		<div v-if="currentDevices.length > 0">
-			<el-table :data="currentDevices" @selection-change="selectionChange" tooltip-effect="dark" style="width:100%" stripe border >
+			<el-table :data="currentDevices" @selection-change="selectionChange" tooltip-effect="dark" style="width:100%" stripe border>
 				<el-table-column type="selection" width="40"></el-table-column>
-				<el-table-column label="ID" prop="id" >
+				<el-table-column label="ID" prop="id">
 					<template slot-scope="scope">
 						<el-tag size="medium" type="warning">{{ scope.row.id }}</el-tag>
 					</template>
@@ -31,23 +31,23 @@
 
 				<el-table-column :label="$t('management.devices.name')">
 					<editable-cell prop="name" slot-scope="{ row }" :can-edit="editModeEnabled" v-model="row.name"
-						:toolTipContent="$t('management.devices.edit')" @input="(newName) => rename(row, newName)" >
+								   :toolTipContent="$t('management.devices.edit')" @input="(newName) => rename(row, newName)">
 						<span slot="content">{{ row.name }}</span>
 					</editable-cell>
 				</el-table-column>
 
 				<el-table-column prop="method" :label="$t('management.devices.method.label')" width="90"
-					:filters="[{ text: $t('management.devices.method.wired'), value:  $t('management.devices.method.wired') }, { text:  $t('management.devices.method.wireless'), value:  $t('management.devices.method.wireless') }]"
-					:filter-method="filterTag" filter-placement="bottom-end" >
+								 :filters="[{ text: $t('management.devices.method.wired'), value:  $t('management.devices.method.wired') }, { text:  $t('management.devices.method.wireless'), value:  $t('management.devices.method.wireless') }]"
+								 :filter-method="filterTag" filter-placement="bottom-end">
 					<template slot-scope="scope">
-						<el-tag :type="scope.row.method ===  $t('management.devices.method.wired') ? 'primary' : 'success'">{{ scope.row.method }} </el-tag>
+						<el-tag :type="scope.row.method ===  $t('management.devices.method.wired') ? 'primary' : 'success'">{{ scope.row.method }}</el-tag>
 					</template>
 				</el-table-column>
 
 				<el-table-column fixed="right" :label=" $t('management.devices.operation')" width="85">
 					<template slot-scope="scope">
 						<el-button @click.native.prevent="disconnect(scope.$index, scope.row.id)" type="text" size="small"
-							:disabled="scope.row.method ===  $t('management.devices.method.wired')" >
+								   :disabled="scope.row.method ===  $t('management.devices.method.wired')">
 							{{ $t('management.devices.disconnect') }}
 						</el-button>
 					</template>
@@ -66,7 +66,7 @@
 			<br>
 			<div class="wrap-button">
 				<el-col :span="20">
-					<el-input v-model="appLocation" placeholder="请输入apk路径"  clearable >
+					<el-input v-model="appLocation" placeholder="请输入apk路径" clearable>
 						<el-button slot="append" @click='openFileDialog'>选择文件</el-button>
 					</el-input>
 					<input type="file" name="filename" id="open" style="display:none" accept=".apk"
@@ -76,7 +76,9 @@
 					&nbsp;
 				</el-col>
 				<el-col :span="3">
-					<el-button type="success" style="width: 100%;" @click.native.prevent="installApp" :disabled="(Object.keys(activeDevices).length === 0 || appLocation ==='' )" plain v-waves>安装</el-button>
+					<el-button type="success" style="width: 100%;" @click.native.prevent="installApp" :disabled="(Object.keys(activeDevices).length === 0 || appLocation ==='' )"
+							   plain v-waves>安装
+					</el-button>
 				</el-col>
 			</div>
 			<br>
@@ -102,6 +104,7 @@
 				currentDevices: [],
 				selectedDevices: [],
 				activeDevices: {},
+				activeDeviceIds: [],
 				appLocation: '',
 				ip: '192.168.0.',
 				wirelessDevices: [],
@@ -148,7 +151,7 @@
 
 			const opened = {}
 			ipcRenderer.on('open', (_, id) => {
-				this.$set(this.activeDevices,id, id)
+				this.$set(this.activeDevices, id, id)
 				if (!opened[id]) {
 					opened[id] = true
 					setTimeout(() => {
@@ -162,7 +165,7 @@
 
 			const closed = {}
 			ipcRenderer.on('close', (_, {success, id}) => {
-				this.$delete(this.activeDevices,id);
+				this.$delete(this.activeDevices, id);
 				if (!closed[id]) {
 					closed[id] = true
 					const result = success ? 'success' : 'error'
@@ -173,22 +176,39 @@
 					}, 1000)
 				}
 			})
+
+			ipcRenderer.on('activeDeviceId', (_, item) => {
+				console.log(item);
+				this.activeDeviceIds.push(item.pid)
+			})
+
+			ipcRenderer.on('offlineDeviceId', (_, item) => {
+				console.log(item);
+				this.activeDeviceIds.push(item.pid)
+			})
 		},
 		components: {
 			EditableCell
 		},
 		methods: {
-			openFileDialog(){
+			openFileDialog() {
 				document.getElementById('open').click()
 			},
-			showFilePath(){
+			showFilePath() {
 				this.appLocation = document.getElementById('open').files[0].path
-				document.getElementById('open').value=''
+				document.getElementById('open').value = ''
 			},
 			installApp() {
 				ipcRenderer.send('installApp', {appLocation: this.appLocation, devices: this.activeDevices})
 			},
 			open() {
+				this.activeDeviceIds.forEach(function (deviceId) {
+					console.log(deviceId);
+					process.kill(deviceId, 'SIGTERM')
+				})
+				this.activeDeviceIds = []
+				console.log(this.activeDeviceIds);
+
 				this.$notify.info(this.$t('management.open.loading'), 2000)
 				const config = this.$store.get('config')
 				ipcRenderer.send('open', {config, devices: this.selectedDevices})

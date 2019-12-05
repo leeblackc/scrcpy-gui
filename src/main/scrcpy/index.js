@@ -85,14 +85,17 @@ const open = ({ sender }, options) => {
 			}
 			console.log(`stdout: ${data}`)
 		})
-		// activeDeivies.push(id)
-		// sender.send('activeDevice',id)
+		// activeDeivies.push(scrcpy.pid)
+		sender.send('activeDeviceId',scrcpy)
+
 		scrcpy.on('error', (code) => {
 			console.log(`child process close all stdio with code ${code}`)
 			sender.send('close', { success: code === 0, id })
+
 			scrcpy.kill()
 			// opened = false
 		})
+
 
 		scrcpy.on('close', (code) => {
 			console.log(`child process close all stdio with code ${code}`)
